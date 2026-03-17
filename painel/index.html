@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Candidatos CODHAB - Brasília</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <h1>Candidatos Habilitados por RA e Faixa de Renda</h1>
+    <div id="buttons">
+        <button onclick="loadData('RII_0-6SM_Organizadas.csv')">0 a 6 Salarios Minimos - R$0 até R$9.726,00</button>
+        <button onclick="loadData('RII_6SM-10SM_Organizadas.csv')">6 a 10 Salarios Minimos - R$9.726,00 até
+            R$16.210,00</button>
+        <button onclick="loadData('RII_10SM-12SM_Organizadas.csv')">10 a 12 Salarios Minimos - R$16.210,01 até
+            R$19.452,00</button>
+    </div>
+
+    <div id="main">
+        <aside id="sidebar">
+            <h2>Regiões</h2>
+            <ul id="regionList"></ul>
+        </aside>
+        <div id="map"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
