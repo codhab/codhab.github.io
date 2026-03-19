@@ -153,6 +153,14 @@ function updateMap(data) {
 
   const sortedData = [...data].sort((a, b) => b.quantidade - a.quantidade);
 
+  // Calcular o total
+  const total = sortedData.reduce((sum, item) => sum + item.quantidade, 0);
+
+  // Adicionar item do total
+  const totalItem = document.createElement('li');
+  totalItem.innerHTML = `<strong>TOTAL</strong><br><span style="font-size:0.9em;">${total.toLocaleString()} candidatos</span>`;
+  regionListElement.appendChild(totalItem);
+
   sortedData.forEach(item => {
     const coord = coordinates[item.ra];
     if (!coord) return;
@@ -182,10 +190,10 @@ async function loadData(filename) {
     const csvText = await response.text();
     const data = parseCSV(csvText);
     updateMap(data);
-    document.querySelector('h1').textContent = `Candidatos Habilitados por região - ${filename.replace('_Organizadas.csv', '')}`;
+    document.querySelector('h1').textContent = `Candidatos Habilitados por região - ${filename.replace('.csv', '')}`;
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
   }
 }
 
-loadData('RII_0-6SM_Organizadas.csv');
+loadData('RII/RII_3SM.csv');
