@@ -4,7 +4,7 @@
 }
 
 #map {
-  height: 800px;
+  height: 600px;
   width: 100%;
   flex: 1;
 }
@@ -35,7 +35,7 @@
 
 #sidebar {
   width: 280px;
-  max-height: 800px;
+  max-height: 600px;
   overflow: auto;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 0, 0, 0.15);

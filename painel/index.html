@@ -12,13 +12,27 @@
 
 <body>
     <h1>Candidatos Habilitados por RA e Faixa de Renda</h1>
-    <div id="buttons">
+    <div id="buttons"> RII
         <button onclick="loadData('RII/RII_FU1.csv')">FAIXA 1 - R$0 até R$2.850,00</button>
         <button onclick="loadData('RII/RII_3SM.csv')">R$0 até R$4.863,00</button>
         <button onclick="loadData('RII/RII_FU2.csv')">FAIXA 2 - R$2.850,01 até R$4.700,00</button>
         <button onclick="loadData('RII/RII_FU3.csv')">FAIXA 3 - R$4.700,01 até R$8.600,00</button>
         <button onclick="loadData('RII/RII_8k_12SM.csv')">R$8.000,00 Mil até R$19.452,00</button>
     </div>
+    <div id="buttons"> ENTIDADES
+        <button onclick="loadData('ENTIDADE/ENT_FU1.csv')">FAIXA 1 - R$0 até R$2.850,00</button>
+        <button onclick="loadData('ENTIDADE/ENT_3SM.csv')">R$0 até R$4.863,00</button>
+        <button onclick="loadData('ENTIDADE/ENT_FU2.csv')">FAIXA 2 - R$2.850,01 até R$4.700,00</button>
+        <button onclick="loadData('ENTIDADE/ENT_FU3.csv')">FAIXA 3 - R$4.700,01 até R$8.600,00</button>
+        <button onclick="loadData('ENTIDADE/ENT_8k_12SM.csv')">R$8.000,00 Mil até R$19.452,00</button>
+    </div>
+        <div id="buttons"> RII + ENTIDADES
+            <button onclick="loadData('RII_ENTIDADE/RII-ENT_FU1.csv')">FAIXA 1 - R$0 até R$2.850,00</button>
+            <button onclick="loadData('RII_ENTIDADE/RII-ENT_3SM.csv')">R$0 até R$4.863,00</button>
+            <button onclick="loadData('RII_ENTIDADE/RII-ENT_FU2.csv')">FAIXA 2 - R$2.850,01 até R$4.700,00</button>
+            <button onclick="loadData('RII_ENTIDADE/RII-ENT_FU3.csv')">FAIXA 3 - R$4.700,01 até R$8.600,00</button>
+            <button onclick="loadData('RII_ENTIDADE/RII-ENT_8k_12SM.csv')">R$8.000,00 Mil até R$19.452,00</button>
+        </div>
 
     <div id="main">
         <aside id="sidebar">
