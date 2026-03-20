@@ -4,13 +4,14 @@
 }
 
 #map {
-  height: 600px;
+  height: 700px;
   width: 100%;
   flex: 1;
 }
 
 #buttons {
   margin-bottom: 10px;
+  text-align: center;
 }
 
 #buttons button {
@@ -35,7 +36,7 @@
 
 #sidebar {
   width: 280px;
-  max-height: 600px;
+  max-height: 700px;
   overflow: auto;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 0, 0, 0.15);
