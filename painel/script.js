@@ -51,15 +51,22 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// Layer group para os círculos
+// Layer groups para os círculos
 const circlesLayer = L.layerGroup().addTo(map);
+const empreendimentosLayer = L.layerGroup().addTo(map);
 
 // Elementos para a lista lateral
 const regionListElement = document.getElementById('regionList');
+const empreendimentosListElement = document.getElementById('empreendimentosList');
 
 // Auxiliares para destacar seleção
 const circlesByRa = {};
 let currentSelectedRa = null;
+
+// Armazenar empreendimentos
+const empreendimentos = [];
+const empreendimentosByNome = {};
+let currentSelectedEmpreendimento = null;
 
 const baseCircleStyle = {
   color: 'blue',
@@ -71,6 +78,19 @@ const baseCircleStyle = {
 const highlightCircleStyle = {
   color: 'gold',
   fillColor: 'rgba(255, 215, 0, 0.5)',
+  weight: 4
+};
+
+const empreendimentoCircleStyle = {
+  color: '#d10b0b',
+  fillColor: '#d10b0b',
+  fillOpacity: 0.6,
+  weight: 2
+};
+
+const highlightEmpreendimentoStyle = {
+  color: 'red',
+  fillColor: 'rgba(255, 0, 0, 0.6)',
   weight: 4
 };
 
@@ -98,6 +118,37 @@ function parseCSV(csvText) {
       const quantidade = parseInt(parts[1].trim(), 10);
       if (ra && !Number.isNaN(quantidade)) {
         data.push({ ra, quantidade });
+      }
+    }
+  }
+  return data;
+}
+
+function parseCSVEmpreendimentos(csvText) {
+  const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+  let headerIndex = -1;
+
+  // Procura pela linha de cabeçalho
+  for (let i = 0; i < lines.length; i++) {
+    const lower = lines[i].toLowerCase();
+    if (lower.includes('quantidade') && lower.includes('empreendimento') && lower.includes('ra')) {
+      headerIndex = i;
+      break;
+    }
+  }
+
+  if (headerIndex === -1) return [];
+
+  const data = [];
+  for (let i = headerIndex + 1; i < lines.length; i++) {
+    const parts = lines[i].split(';');
+    if (parts.length >= 3) {
+      const quantidade = parseInt(parts[0].trim(), 10);
+      const empreendimento = parts[1].trim();
+      const ra = parts[2].trim();
+
+      if (ra && empreendimento && !Number.isNaN(quantidade)) {
+        data.push({ quantidade, empreendimento, ra });
       }
     }
   }
@@ -145,6 +196,51 @@ function highlightRegion(ra) {
   currentSelectedRa = ra;
 }
 
+function clearEmpreendimentoSelection() {
+  if (!currentSelectedEmpreendimento) return;
+
+  const previousCircle = empreendimentosByNome[currentSelectedEmpreendimento];
+  if (previousCircle) {
+    previousCircle.setStyle(empreendimentoCircleStyle);
+  }
+
+  const previousListItem = document.querySelector(`#empreendimentosList li[data-empreendimento="${CSS.escape(currentSelectedEmpreendimento)}"]`);
+  if (previousListItem) {
+    previousListItem.classList.remove('selected');
+  }
+
+  currentSelectedEmpreendimento = null;
+}
+
+function highlightEmpreendimento(nome) {
+  if (!nome) return;
+  clearEmpreendimentoSelection();
+
+  const circle = empreendimentosByNome[nome];
+  if (!circle) return;
+
+  circle.setStyle(highlightEmpreendimentoStyle);
+  circle.bringToFront();
+  circle.openPopup();
+
+  // Encontrar as coordenadas do empreendimento
+  const emp = empreendimentos.find(e => e.nome === nome);
+  if (emp) {
+    const coord = coordinates[emp.ra];
+    if (coord) {
+      map.setView(coord, Math.max(map.getZoom(), 12));
+    }
+  }
+
+  const listItem = document.querySelector(`#empreendimentosList li[data-empreendimento="${CSS.escape(nome)}"]`);
+  if (listItem) {
+    listItem.classList.add('selected');
+    listItem.scrollIntoView({ block: 'nearest' });
+  }
+
+  currentSelectedEmpreendimento = nome;
+}
+
 function updateMap(data) {
   circlesLayer.clearLayers();
   regionListElement.innerHTML = '';
@@ -184,6 +280,65 @@ function updateMap(data) {
   });
 }
 
+async function loadEmpreendimentos() {
+  try {
+    const response = await fetch('RII_ENTIDADE/empreendimentos.csv');
+    const csvText = await response.text();
+    const data = parseCSVEmpreendimentos(csvText);
+
+    // Limpar layer anterior
+    empreendimentosLayer.clearLayers();
+    empreendimentos.length = 0;
+    Object.keys(empreendimentosByNome).forEach(key => delete empreendimentosByNome[key]);
+    empreendimentosListElement.innerHTML = '';
+    currentSelectedEmpreendimento = null;
+
+    const sortedData = [...data].sort((a, b) => b.quantidade - a.quantidade);
+
+    // Calcular o total de unidades
+    const totalUnidades = sortedData.reduce((sum, item) => sum + item.quantidade, 0);
+
+    // Adicionar item do total
+    const totalItem = document.createElement('li');
+    totalItem.innerHTML = `<strong>TOTAL</strong><br><span style="font-size:0.9em;">${totalUnidades.toLocaleString()} unidades</span>`;
+    empreendimentosListElement.appendChild(totalItem);
+
+    sortedData.forEach(item => {
+      const coord = coordinates[item.ra];
+      if (!coord) return;
+
+      const radius = Math.sqrt(item.quantidade) * 35; // Raio 
+      const circle = L.circle(coord, {
+        ...empreendimentoCircleStyle,
+        radius: radius
+      }).addTo(empreendimentosLayer);
+
+      circle.bindPopup(`<b>${item.empreendimento}</b><br>RA: ${item.ra}<br>Unidades: ${item.quantidade}`);
+      circle.on('click', () => highlightEmpreendimento(item.empreendimento));
+
+      empreendimentos.push({
+        nome: item.empreendimento,
+        ra: item.ra,
+        quantidade: item.quantidade,
+        circle: circle
+      });
+
+      empreendimentosByNome[item.empreendimento] = circle;
+
+      // Adicionar na lista lateral
+      const listItem = document.createElement('li');
+      listItem.dataset.empreendimento = item.empreendimento;
+      listItem.innerHTML = `<strong>${item.empreendimento}</strong><br><span style="font-size:0.9em;">RA: ${item.ra}</span><br><span style="font-size:0.9em;">${item.quantidade.toLocaleString()} unidades</span>`;
+      listItem.addEventListener('click', () => highlightEmpreendimento(item.empreendimento));
+      empreendimentosListElement.appendChild(listItem);
+    });
+
+    document.querySelector('h1').textContent = 'Empreendimentos CODHAB';
+  } catch (error) {
+    console.error('Erro ao carregar empreendimentos:', error);
+  }
+}
+
 async function loadData(filename) {
   try {
     const response = await fetch(filename);
@@ -196,4 +351,6 @@ async function loadData(filename) {
   }
 }
 
+// Carregar empreendimentos e dados iniciais
+loadEmpreendimentos();
 loadData('RII/RII_3SM.csv');

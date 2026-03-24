@@ -1,5 +1,5 @@
 * {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Tahoma, sans-serif;
   text-align: center;
 }
 
@@ -7,11 +7,19 @@
   height: 700px;
   width: 100%;
   flex: 1;
+  min-width: 300px;
 }
 
 #buttons {
-  margin-bottom: 10px;
-  text-align: center;
+  margin-bottom: 15px;
+  text-align: left;
+  padding: 10px 0;
+}
+
+#buttons2 {
+  margin-bottom: 15px;
+  text-align: left;
+  padding: 10px 0;
 }
 
 #buttons button {
@@ -26,6 +34,20 @@
 
 #buttons button:hover {
   background-color: #0250a3;
+}
+
+#buttons2 button {
+  margin-right: 10px;
+  padding: 8px 16px;
+  background-color: #b80f0f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#buttons2 button:hover {
+  background-color: #5f0b12;
 }
 
 #main {
@@ -70,5 +92,44 @@
 
 #regionList li.selected {
   background: rgba(0, 123, 255, 0.2);
+  font-weight: 600;
+}
+
+#sidebarEmpreendimentos {
+  width: 280px;
+  max-height: 700px;
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: left;
+}
+
+#sidebarEmpreendimentos h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+#empreendimentosList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#empreendimentosList li {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#empreendimentosList li:hover {
+  background: rgba(136, 136, 136, 0.1);
+}
+
+#empreendimentosList li.selected {
+  background: rgba(255, 0, 0, 0.2);
   font-weight: 600;
 }
